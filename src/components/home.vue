@@ -1,29 +1,30 @@
 <template>
   <div class="hello">
+	<img :src="backUrl" alt="back" v-if="!!backUrl">
 	<Button type="primary" @click="getFastProjectInfo">show</Button>
     <Card :bordered="false">
       <p slot="title">No border title</p>
-      <p>Content of no border type. Content of no border type. Content of no border type. Content of no border type.</p>
+      <p>{{msg}}</p>
     </Card>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import cache from '../cache/cache';
 export default {
     name: 'HelloWorld',
     data () {
         return {
-            msg: 'Welcome to Your Vue.js App'
+			msg: 'Welcome to Your Vue.js App',
+			backUrl: ''
         };
     },
     methods: {
-        getFastProjectInfo () {
-            axios.get('/api/v1/live/fast/ide/project/get.json?projectId=6').then(res => {
-                console.log(res);
-            }).catch(err => {
-                console.log(err);
-            });
+        async getFastProjectInfo () {
+			let data = await cache.getProjectInfo({projectId: 6})
+			this.msg = data;
+			this.backUrl = data.smallFaceUrl;
+			console.log(data)
         }
     }
 };
