@@ -1,14 +1,14 @@
 <template>
-  <div class="hello">
+  <div class="project-count">
+	<p class="project-count-title">{{title}}</p>
 	<Button type="primary" @click="getFastProjectInfo">show</Button>
 	<DatePicker v-model="startTime" type="date" show-week-numbers placeholder="起始时间" style="width: 200px"></DatePicker>
 	<DatePicker v-model="endTime" type="date" show-week-numbers placeholder="结束时间" style="width: 200px"></DatePicker>
 	<Button type="primary" @click="getProjectUserRate">获取排名</Button>
 
-    <Card :bordered="false">
-      <p slot="title">起始时间：{{startTime | timeFormat}}</p>
-      <p>{{msg}}</p>
-      <ve-histogram :data="chartData" ></ve-histogram>
+    <Card :bordered="false" class="project-count-card">
+		<p slot="title" v-if="!!startTime">起始时间：{{startTime | timeFormat}}</p>
+		<ve-bar :data="chartData" :settings="chartSettings"></ve-bar>
     </Card>
 	<img :src="backUrl" alt="back" v-if="!!backUrl">
 
@@ -23,12 +23,16 @@ export default {
     name: 'project-count',
     data () {
         return {
-			msg: 'Welcome to Your Vue.js App',
+			title: '作品数量排行',
 			backUrl: '',
 			startTime: null,
 			endTime: null,
 			chartSettings: {
-				showLine: ['数量']
+				metrics: ['数量'],
+				dataOrder: {
+				label: '数量',
+				order: 'desc'
+				}
 			},
 			chartData: {
 				columns: ['用户ID', '数量'],
@@ -64,6 +68,7 @@ export default {
 			this.chartData.rows = this.convertTable(data);
 			console.log(data)
 		},
+		// 转换成图表
 		convertTable (data) {
 			return data && data.map(i => {
 				i['用户ID'] = i.memberId;
@@ -77,7 +82,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="less">
 h1,
 h2 {
   font-weight: normal;
@@ -92,5 +97,16 @@ li {
 }
 a {
   color: #42b983;
+}
+.project-count{
+	&-title{
+		margin-bottom: 20px;
+		font-size: 16px;
+		color: #666;
+	}
+	&-card{
+		width: 540px;
+		margin: 60px auto;
+	}
 }
 </style>
