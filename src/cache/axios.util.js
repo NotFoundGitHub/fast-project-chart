@@ -2,6 +2,8 @@ import axios from 'axios';
 import vue from 'vue';
 
 let that = vue.prototype;
+axios.defaults.timeout = 6000;
+
 axios.interceptors.request.use(
     function (config) {
         config.data = config.data || {};
