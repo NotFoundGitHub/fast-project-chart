@@ -33,7 +33,6 @@ axios.interceptors.response.use(
         let result = response.data.result;
         let errorCode = response.data.code;
         let errorMessage = response.data.message;
-        console.log('that', that)
         that.$Spin.hide();
 
         if (errorCode !== 0) {

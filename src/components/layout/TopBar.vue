@@ -1,11 +1,11 @@
 <template>
     <div>
         <Menu mode="horizontal" theme="primary" active-name="1">
-            <MenuItem name="1" to="/project/count">
+            <MenuItem name="1" to="/project">
                 <Icon type="ios-paper" />
                 作品排行
             </MenuItem>
-            <MenuItem name="2">
+            <MenuItem name="2" to="/user">
                 <Icon type="ios-people" />
                 用户管理
             </MenuItem>
