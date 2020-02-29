@@ -1,9 +1,9 @@
 <template>
     <div>
         <Menu mode="horizontal" theme="primary" active-name="1">
-            <MenuItem name="1">
+            <MenuItem name="1" to="/project/count">
                 <Icon type="ios-paper" />
-                内容管理
+                作品排行
             </MenuItem>
             <MenuItem name="2">
                 <Icon type="ios-people" />
@@ -32,11 +32,9 @@
     </div>
 </template>
 <script>
-
     export default {
-        components: {
+        name: 'top-bar'
 
-        }
     }
 </script>
 <style lang="less" scoped>

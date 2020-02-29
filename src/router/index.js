@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Layout from '@/components/Layout'
+import Home from '@/components/Home'
 import Project from '@/components/user/UserProject'
 import ProjectCount from '@/components/user/UserProjectCount'
 
@@ -11,7 +11,8 @@ export default new Router({
         {
             path: '/',
             name: 'layout',
-            component: Layout
+            component: Home,
+            redirect: { name: 'project' }
         }, {
             path: '/project',
             name: 'project',
