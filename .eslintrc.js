@@ -26,7 +26,18 @@ module.exports = {
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'semi':0,
-    "indent": 0,
-    "no-tabs":"off"  
+    "indent": 'off',
+    'vue/script-indent': [
+        'warn',
+        4,
+        {
+            baseIndent: 1,
+            switchCase: 1
+        }
+    ],
+    'space-before-function-paren': 0,
+    'no-new': 'off',
+    "no-tabs":"off",
+    'vue/no-parsing-error': [2, { 'x-invalid-end-tag': false }]
   }
 }

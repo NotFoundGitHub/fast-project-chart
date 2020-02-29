@@ -7,23 +7,23 @@ import ProjectCount from '@/components/user/UserProjectCount'
 Vue.use(Router)
 
 export default new Router({
-  routes: [
-    {
-		path: '/',
-		name: 'layout',
-		component: Layout,
-		redirect: { name: 'project' }
-    }, {
-		path: '/project',
-		name: 'project',
-		component: Project,
-		redirect: { name: 'project.count' },
-		children: [{
-			path: '/project/count',
-			name: 'project.count',
-			component: ProjectCount
+    routes: [
+        {
+            path: '/',
+            name: 'layout',
+            component: Layout,
+            redirect: { name: 'project' }
+        }, {
+            path: '/project',
+            name: 'project',
+            component: Project,
+            redirect: { name: 'project.count' },
+            children: [{
+                path: '/project/count',
+                name: 'project.count',
+                component: ProjectCount
 
-		}]
-    }
-  ]
+            }]
+        }
+    ]
 })

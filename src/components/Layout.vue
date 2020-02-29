@@ -33,11 +33,11 @@
 </template>
 <script>
 
-export default {
-    components: {
+    export default {
+        components: {
 
+        }
     }
-}
 </script>
 <style lang="less" scoped>
 

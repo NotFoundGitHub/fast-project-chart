@@ -40,13 +40,13 @@ axios.interceptors.response.use(
             if (!response.config.hideError) {
                 switch (errorCode) {
                     case -3: // toast显示
-                    that.$Message.error({
-                        content: errorMessage,
-                        background: true
-                    })
+                        that.$Message.error({
+                            content: errorMessage,
+                            background: true
+                        })
                         break;
                     case -2: // 弹窗显示,多按钮
-                    that.$Modal.error({
+                        that.$Modal.error({
                             title: '提示',
                             content: errorMessage,
                             okButton: '知道了'
@@ -65,10 +65,10 @@ axios.interceptors.response.use(
                         })
                         return Promise.reject(err);
                     case 2: // 没权限
-                    that.$Message.error({
-                        content: '无权限',
-                        background: true
-                    })
+                        that.$Message.error({
+                            content: '无权限',
+                            background: true
+                        })
                         window.location.href = '/#/404';
                         break;
                     default:
