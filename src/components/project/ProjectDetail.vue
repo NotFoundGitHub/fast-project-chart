@@ -18,9 +18,9 @@
                     :bordered="false"
                     class="project-detail-comment-list-card">
                     <p slot="title">{{item.key}}</p>
-                        <List  size="small">
+                        <List border size="small">
                             <ListItem class="project-detail-comment-list-card-li" v-for="(part,i) in item.value" :key="'detail'+index+'part'+i">{{part.trim()}}</ListItem>
-                        </template>
+                        </List>
                 </Card>
 
             </div>
