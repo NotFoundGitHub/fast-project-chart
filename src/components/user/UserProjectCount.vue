@@ -35,14 +35,14 @@
                     }
                 },
                 chartData: {
-                    columns: ['用户ID', '数量'],
+                    columns: ['用户名', '数量'],
                     rows: [
-                        { '用户ID': '1/1', '数量': 1093 },
-                        { '用户ID': '1/2', '数量': 3230 },
-                        { '用户ID': '1/3', '数量': 2623 },
-                        { '用户ID': '1/4', '数量': 1423 },
-                        { '用户ID': '1/5', '数量': 3492 },
-                        { '用户ID': '1/6', '数量': 4293 }
+                        { '用户名': '1/1', '数量': 1093 },
+                        { '用户名': '1/2', '数量': 3230 },
+                        { '用户名': '1/3', '数量': 2623 },
+                        { '用户名': '1/4', '数量': 1423 },
+                        { '用户名': '1/5', '数量': 3492 },
+                        { '用户名': '1/6', '数量': 4293 }
                     ]
                 }
             };
@@ -71,12 +71,22 @@
             // 转换成图表
             convertTable (data) {
                 return data && data.map(i => {
-                    i['用户ID'] = i.memberId;
+                    i['用户名'] = this.subStrName(i.realName);
                     i['数量'] = i.count;
                     return i;
                 })
+            },
+            subStrName(name) {
+                const MAX_NAME_LENGTH = 6;
+                if (name && /[^u4e00-u9fa5]/img.test(name)) {
+                    console.log()
+                    name = name.substr(0, Math.floor(MAX_NAME_LENGTH / 2));
+                }
+                if (name && name.length <= MAX_NAME_LENGTH) {
+                    return name;
+                }
+                return name && name.substr(0, MAX_NAME_LENGTH) + '...';
             }
-
         }
     };
 </script>

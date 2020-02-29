@@ -11,8 +11,7 @@ export default new Router({
         {
             path: '/',
             name: 'layout',
-            component: Layout,
-            redirect: { name: 'project' }
+            component: Layout
         }, {
             path: '/project',
             name: 'project',
