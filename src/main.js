@@ -5,6 +5,7 @@ import App from './App';
 import router from './router';
 import ViewUI from 'view-design';
 import VCharts from 'v-charts';
+import store from './store'
 
 import 'view-design/dist/styles/iview.css';
 
@@ -16,6 +17,7 @@ Vue.use(VCharts)
 new Vue({
     el: '#app',
     router,
+    store,
     components: { App },
     template: '<App/>'
 });

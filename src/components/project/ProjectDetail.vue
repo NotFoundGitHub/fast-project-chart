@@ -1,6 +1,6 @@
 <template>
     <div class="project-detail">
-        <iframe class="project-detail-iframe" frameborder = "0" src="https://geek.163.com/path/project/fast/create#1"></iframe>
+        <iframe class="project-detail-iframe" frameborder = "0" :src="'https://geek.163.com/path/project/fast/create#'+$route.params.projectId"></iframe>
         <div class="project-detail-comment">
             <p class="project-detail-comment-title">点评模板</p>
             <div class="project-detail-comment-list">

@@ -9,6 +9,12 @@ import ProjectDetail from '@/components/project/ProjectDetail'
 import User from '@/components/user/User'
 import UserTable from '@/components/user/UserTable'
 
+import Manage from '@/components/manage/Manage'
+import ManageList from '@/components/manage/ManageList'
+import ManageProjectList from '@/components/manage/ManageProjectList'
+
+import NotFound from '@/components/NotFound'
+
 Vue.use(Router)
 
 export default new Router({
@@ -24,13 +30,13 @@ export default new Router({
             component: Project,
             redirect: { name: 'project.count' },
             children: [{
-                           path: '/project/count',
+                           path: 'count',
                            name: 'project.count',
                            component: ProjectCount
 
                        },
                        {
-                           path: '/project/detail/:projectId',
+                           path: 'detail/:projectId',
                            name: 'project.detail',
                            component: ProjectDetail
                        }
@@ -41,10 +47,29 @@ export default new Router({
             component: User,
             redirect: { name: 'user.table' },
             children: [{
-                path: '/user/table',
+                path: 'table',
                 name: 'user.table',
                 component: UserTable
             }]
+        },
+        {
+            path: '/manage',
+            name: 'manage',
+            component: Manage,
+            redirect: { name: 'manage.list' },
+            children: [{
+                path: 'list',
+                name: 'manage.list',
+                component: ManageList
+            }, {
+                path: 'project/list/:memberId',
+                name: 'manage.project.list',
+                component: ManageProjectList
+            }]
+        }, {
+            path: '*',
+            name: '404',
+            component: NotFound
         }
     ]
 })

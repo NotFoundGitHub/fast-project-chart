@@ -1,25 +1,27 @@
 <template>
-    <div class="user-project-table">
-        <div class="user-project-table-search">
-            <Select v-model="selectValue" style="width:120px">
-                <Option v-for="item in SelectOption" :value="item.value" :key="item.value">{{ item.label }}</Option>
-            </Select>
-            <Input
-                v-model="searchId"
-                clearable
-                placeholder="输入作品id或者用户id"
-                @on-enter="selectProject"
-                class="user-project-table-search-input"
-                style="width: 300px"/>
-             <Button class="user-project-table-search-btn" type="primary" shape="circle" icon="ios-search">搜索</Button>
+    <div class="student-manage">
+        <div class="student-manage-header">
+            <div class="student-manage-header-info">
+                <Card>
+                    <img class="student-manage-header-info-img" :src="userInfo.smallFaceUrl" alt="头像">
+                    <p slot="title">{{userInfo.realName}}</p>
+                    <p>ID：{{userInfo.id}}</p>
+                    <Divider class="student-manage-header-info-divider"/>
+                    <p>手机：{{userInfo.phoneNumber}}</p>
+                    <Divider class="student-manage-header-info-divider"/>
+                    <i-circle :percent="commentsPercent" dashboard>
+                        <span class="demo-circle-inner" style="font-size:24px">{{commentsPercent}}%</span>
+                    </i-circle>
+                    <p>点评进度</p>
+                </Card>
+
+            </div>
+            <div class="student-manage-calendar">
+                <p class="student-manage-calendar-title">用户创作日历</p>
+                <Calendar :markDate="markDateArr" class="student-manage-calendar-pannel"></Calendar>
+            </div>
         </div>
-        <div class="user-project-table-info">
-            <span style="margin-left:20px;color:#333"> 图示：</span>
-            <Button class="btn" shape="circle" icon="md-add"></Button>添加学生到 "我的学生" 里面
-            <Button class="btn" type="primary" shape="circle" icon="md-create"></Button> 打开作品创作页
-            <Button class="btn" type="success" shape="circle" icon="md-share-alt"></Button>打开作品分享页
-        </div>
-        <div class="user-project-table-table">
+        <div class="user-manage-list-table">
             <Table
                 :loading="loading"
                 highlight-row
@@ -28,76 +30,45 @@
                 :data="projectList"
                 border >
             </Table>
-
         </div>
-        <div class="user-project-table-page">
-            <Page
-                :total="100"
-                show-sizer
-                @on-change="handleChangePage"
-                @on-page-size-change="handlePageSizeChange"
-                :page-size="20"
-            />
-        </div>
+        <Modal
+            v-model="restoreModal"
+            title="你确定要恢复作品么"
+            @on-ok="handleRestoreProject">
+             <Input v-model="restoreUrl" placeholder="输入projectUrl" clearable style="width: 480px" />
+        </Modal>
     </div>
 </template>
 <script>
-    import {mapState, mapMutations} from 'vuex';
-
+    import Calendar from 'vue-calendar-component';
     export default {
-        computed: {
-            ...mapState(['manage'])
+        name: 'manage-list',
+        components: {
+            Calendar
         },
         data() {
             return {
-                SelectOption: [
-                    {
-                        label: '作品id',
-                        value: 'projectId'
-                    },
-                    {
-                        label: '改编作品id',
-                        value: 'parentId'
-                    },
-                    {
-                        label: '用户id',
-                        value: 'memberId'
-                    },
-                    {
-                        label: '手机号',
-                        value: 'phoneNumber'
-                    }
-                ],
-                selectValue: 'projectId',
-                searchId: '',
+                commentsPercent: 90,
+                selectStudent: '1',
+                markDateArr: ['2020-02-20', '2020-02-22', '2020/2/25', '2020-02-28'],
                 loading: false,
+                userInfo: {
+                    id: 1024322691,
+                    realName: '王小明',
+                    phoneNumber: 13245687894,
+                    smallFaceUrl: '//edu-image.nosdn.127.net/33b4ed3e-99e0-451b-8f73-cb34d7e80568.png'
+
+                },
+                restoreModal: false,
+                restoreProjectId: null,
+                restoreUrl: null,
                 columnList: [
                     {
                         title: '用户id',
                         key: 'authorId',
                         resizable: true,
                         'fixed': 'left',
-                        width: 160,
-                        render: (h, params) => {
-                            return h('div', [
-                                h('span', {}, params.row.authorId),
-                                h('Button', {
-                                    props: {
-                                        size: 'small',
-                                        shape: 'circle',
-                                        'icon': 'md-add'
-                                    },
-                                    style: {
-                                        marginLeft: '20px'
-                                    },
-                                    on: {
-                                        click: () => {
-                                            this.addMangerMember(params.row)
-                                        }
-                                    }
-                                })
-                            ]);
-                        }
+                        width: 120
                     },
                     {
                         title: '作品id',
@@ -215,10 +186,10 @@
                                     },
                                     on: {
                                         click: () => {
-                                            this.remove(params.index)
+                                            this.restoreProject(params.row.projectId)
                                         }
                                     }
-                                }, 'Delete')
+                                }, '恢复作品')
                             ]);
                         }
                     }
@@ -405,24 +376,14 @@
         },
         // 生命周期
         mounted() {
-            this.initDate();
         },
         updated() {
             console.log('updated....')
         },
         methods: {
-            ...mapMutations(['addManageStudentCount']),
-            initDate() {
-                console.log('init', this)
-            },
+
             selectProject: function() {
                 console.log('select', this.searchId)
-            },
-            handleChangePage: (page) => {
-                console.log('page', page)
-            },
-            handlePageSizeChange: (pageSize) => {
-                console.log('pageSize', pageSize)
             },
             // 跳转创作页面
             jumpCreateLink: (id, type) => {
@@ -438,75 +399,83 @@
             commentProject(projectId) {
                 this.$router.push({name: 'project.detail', params: { projectId }})
             },
-            // 向本地存入用户信息
-            addMangerMember(row) {
-                // 1.先从localStorage中取出数据
-                let manageStudentList = window.localStorage.getItem('manageStudentList');
-                if (manageStudentList) {
-                    manageStudentList = JSON.parse(manageStudentList);
-                } else {
-                    manageStudentList = []
-                }
-                // 判断是否已经存在该用户id
-                let hasAddStudent = false;
-                manageStudentList.some(item => {
-                    if (item.authorId === row.authorId) {
-                        hasAddStudent = true;
-                        return true;
+            // 点击确认
+            handleRestoreProject() {
+                if (this.restoreProjectId) {
+                    if (this.restoreUrl && this.restoreUrl.trim()) {
+                        console.log('恢复某次', this.restoreUrl)
+                    } else {
+                        console.log('恢复初始作品')
                     }
-                })
-                if (hasAddStudent) {
-                    this.$Message['error']({
-                        background: true,
-                        content: '小老弟你怎么肥事，已经添加过了'
-                    });
-                    return;
                 }
-                // 2.筛选需要的数据
-                let date = {
-                    authorId: row.authorId,
-                    authorName: row.authorName,
-                    smallFaceUrl: row.smallFaceUrl
-                }
-
-                // 3.向列表中增加一条数据
-                manageStudentList.push(date);
-                // 4.存入本地
-                window.localStorage.setItem('manageStudentList', JSON.stringify(manageStudentList));
-                // 修改学生数量
-                this.addManageStudentCount({
-                    studentCount: this.manage.studentCount + 1
-                })
+            },
+            // 恢复作品
+            restoreProject(projectId) {
+                console.log('projectId', projectId)
+                this.restoreProjectId = projectId;
+                this.restoreModal = true;
             }
-
         }
     }
 </script>
-<style lang="less" scoped>
-.user-project-table{
-    margin:40px auto 0 auto;
-    &-search{
+<style lang="less" >
+.student-manage{
+    &-header{
         display: flex;
-        &-input{
-            margin-left: 10px;
-        }
-        &-btn{
-            margin-left: 10px;
-        }
-    }
-    &-info{
-        text-align: left;
-        margin-top:10px;
-        .btn {
-            margin: 10px;
+        justify-content: space-between;
+        margin: 10px;
+        &-info{
+            &-img{
+                width: 60px;
+            }
+            &-divider{
+                margin: 10px 0;
+            }
         }
     }
-    &-table{
-        margin-top:30px;
-    }
-    &-page{
-        margin-top:40px;
+    &-calendar{
 
+        .wh_container{
+            margin:  0 !important;
+        }
+        &-title{
+            margin: 10px auto;
+        }
+        &-pannel{
+            .wh_content_all{
+                box-shadow: 1px 1px 5px #999;
+                background: #fff !important;
+                .wh_top_changge{
+                    li{
+                        color: #17233d  !important;
+                    }
+                    .wh_jiantou2[data-v-2ebcbc83] {
+                        width: 12px;
+                        height: 12px;
+                        border-top: 2px solid #000;
+                        border-right: 2px solid #000;
+                        transform: rotate(45deg);
+                    }
+                    .wh_jiantou1{
+                        width: 12px;
+                        height: 12px;
+                        border-top: 2px solid #000;
+                        border-left: 2px solid #000;
+                        transform: rotate(-45deg);
+                    }
+                }
+                .wh_isMark{
+                    background: #2d8cf0 !important;
+                }
+                .wh_item_date.wh_isToday{
+                    background: #ed4014 !important;
+                }
+                .wh_content_item{
+                    color: #17233d  !important;
+                }
+            }
+    }
     }
 }
+
 </style>
