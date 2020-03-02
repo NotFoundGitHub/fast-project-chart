@@ -268,12 +268,12 @@
                         break;
                     case '2':
                         console.log('data.query.totalCount', data)
-                        this.totalCount = data.query.totlePageCount;
+                        this.totalCount = data.query.totleCount;
                         data = data.list;
                         break;
                     default:
                         console.log('data.query.totalCount', data)
-                        this.totalCount = data.query.totlePageCount;
+                        this.totalCount = data.query.totleCount;
                         data = data.list;
                 }
                 this.projectList = this.formatListTime(data) || [];
