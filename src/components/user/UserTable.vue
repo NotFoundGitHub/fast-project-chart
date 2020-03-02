@@ -1,17 +1,17 @@
 <template>
     <div class="user-project-table">
         <div class="user-project-table-search">
-            <Select v-model="selectValue" style="width:120px">
+            <Select v-model="selectType" style="width:120px">
                 <Option v-for="item in SelectOption" :value="item.value" :key="item.value">{{ item.label }}</Option>
             </Select>
             <Input
-                v-model="searchId"
+                v-model="searchKey"
                 clearable
                 placeholder="输入作品id或者用户id"
-                @on-enter="selectProject"
+                @on-enter="searchUserProjectList(null,null)"
                 class="user-project-table-search-input"
                 style="width: 300px"/>
-             <Button class="user-project-table-search-btn" type="primary" shape="circle" icon="ios-search">搜索</Button>
+             <Button @click="searchUserProjectList(null,null)" class="user-project-table-search-btn" type="primary" shape="circle" icon="ios-search">搜索</Button>
         </div>
         <div class="user-project-table-info">
             <span style="margin-left:20px;color:#333"> 图示：</span>
@@ -32,17 +32,21 @@
         </div>
         <div class="user-project-table-page">
             <Page
-                :total="100"
+                :total="totalCount"
+                :current="currentPage"
                 show-sizer
+                show-total
                 @on-change="handleChangePage"
                 @on-page-size-change="handlePageSizeChange"
-                :page-size="20"
+                :page-size="pageSize"
             />
         </div>
     </div>
 </template>
 <script>
     import {mapState, mapMutations} from 'vuex';
+    import cache from '../../cache/cache';
+    import TimeFormat from '../../common/TimeFormat';
 
     export default {
         computed: {
@@ -53,24 +57,24 @@
                 SelectOption: [
                     {
                         label: '作品id',
-                        value: 'projectId'
+                        value: '1'
                     },
                     {
                         label: '改编作品id',
-                        value: 'parentId'
+                        value: '2'
                     },
                     {
                         label: '用户id',
-                        value: 'memberId'
+                        value: '3'
                     },
                     {
                         label: '手机号',
-                        value: 'phoneNumber'
+                        value: '4'
                     }
                 ],
-                selectValue: 'projectId',
-                searchId: '',
-                loading: false,
+                selectType: '1',
+                searchKey: '',
+                loading: true,
                 columnList: [
                     {
                         title: '用户id',
@@ -167,7 +171,7 @@
                     },
                     {
                         title: '更新时间',
-                        key: 'gmtModify',
+                        key: 'gmtModified',
                         resizable: true,
                         tooltip: true,
                         width: 180
@@ -207,200 +211,15 @@
                                             this.commentProject(params.row.projectId)
                                         }
                                     }
-                                }, '点评'),
-                                h('Button', {
-                                    props: {
-                                        type: 'error',
-                                        size: 'small'
-                                    },
-                                    on: {
-                                        click: () => {
-                                            this.remove(params.index)
-                                        }
-                                    }
-                                }, 'Delete')
+                                }, '点评')
                             ]);
                         }
                     }
                 ],
-                projectList: [
-                    {
-                        projectId: 1,
-                        projectName: 'zzz的编程作品1',
-                        authorId: 1024322691,
-                        authorName: 'zzz',
-                        thumbUpCount: 0,
-                        viewCount: 7,
-                        thumbnailUrl: '//steam.nosdn.127.net/e5d75a56273562541593c8dfbde07206.png',
-                        projectUrl: '//steam.nosdn.127.net/e21f7b07d335fac1b5033fff6d47dcbb.json',
-                        thumbUped: false,
-                        gmtCreate: '2020-02-22 22:22:22',
-                        gmtModify: '2020-02-22 22:22:22',
-                        smallFaceUrl: '//edu-image.nosdn.127.net/a3bd7746-2b1a-4be3-9b37-dab599dd3f8c.png',
-                        parentId: null
-                    },
-                    {
-                        projectId: 12345,
-                        projectName: '01-休闲滑板车',
-                        authorId: 1390992911,
-                        authorName: '齐宏霖',
-                        thumbUpCount: 0,
-                        viewCount: 2,
-                        thumbnailUrl: '//steam.nosdn.127.net/7526211fc652f05ff75f242d43f0ce20.png',
-                        projectUrl: '//steam.nosdn.127.net/6c1120f4243d99c2f1a41d09056d0ef6.json',
-                        thumbUped: false,
-                        smallFaceUrl: '//edu-image.nosdn.127.net/d686b6f6-95c4-479d-8c99-263791b186d1.png',
-                        parentId: 1468
-                    },
-                    {
-                        projectId: 33190,
-                        projectName: '02-舞蹈时刻',
-                        authorId: 1416405559,
-                        authorName: '兜兜',
-                        thumbUpCount: 0,
-                        viewCount: 2,
-                        thumbnailUrl: '//steam.nosdn.127.net/7abc603b6bdce71e1d184a2420da1a00.png',
-                        projectUrl: '//steam.nosdn.127.net/3cf7094599d2d27a4b5db92e2e5acc4c.json',
-                        thumbUped: false,
-                        smallFaceUrl: '//edu-image.nosdn.127.net/6900d9c9-450c-4fd0-b44e-336fd8fa0c79.png',
-                        parentId: 3402
-                    }, {
-                        projectId: 33184,
-                        projectName: '04-古堡营救',
-                        authorId: 1422855138,
-                        authorName: '诚诚',
-                        thumbUpCount: 0,
-                        viewCount: 2,
-                        thumbnailUrl: '//steam.nosdn.127.net/642d76114c2b12a78bf0edc1ecc51a29.png',
-                        projectUrl: '//steam.nosdn.127.net/8cc537c2129fd0cc9c0d2e92b72cd153.json',
-                        thumbUped: false,
-                        smallFaceUrl: '//edu-image.nosdn.127.net/33b4ed3e-99e0-451b-8f73-cb34d7e80568.png',
-                        parentId: 2592
-                    }, {
-                        projectId: 33187,
-                        projectName: '02-欢乐动物园',
-                        authorId: 1421193276,
-                        authorName: '王笑儒',
-                        thumbUpCount: 0,
-                        viewCount: 3,
-                        thumbnailUrl: '//steam.nosdn.127.net/9e99066f1b47bec65af2be74b3f9a53c.png',
-                        projectUrl: '//steam.nosdn.127.net/d0958981c24e0a077df92b20f0404b41.json',
-                        thumbUped: false,
-                        smallFaceUrl: '//edu-image.nosdn.127.net/43e4f85c-e148-4973-b701-67a5cbb7d8c4.png',
-                        parentId: 382
-                    }, {
-                        projectId: 29982,
-                        projectName: '03-换装大挑战',
-                        authorId: 1425118674,
-                        authorName: '开心',
-                        thumbUpCount: 0,
-                        viewCount: 5,
-                        thumbnailUrl: '//steam.nosdn.127.net/407dedf3df4192e2feadf6e566245527.png',
-                        projectUrl: '//steam.nosdn.127.net/67e2ba219c6699740ff4772e2937c5ed.json',
-                        thumbUped: false,
-                        smallFaceUrl: '//edu-image.nosdn.127.net/a3bd7746-2b1a-4be3-9b37-dab599dd3f8c.png',
-                        parentId: 14667
-                    },
-                    {
-                        projectId: 28760,
-                        projectName: '02-欢乐动物园',
-                        authorId: 1425118674,
-                        authorName: '开心',
-                        thumbUpCount: 0,
-                        viewCount: 8,
-                        thumbnailUrl: '//steam.nosdn.127.net/8a8b9c7e78c76d15a5e98649a5012604.png',
-                        projectUrl: '//steam.nosdn.127.net/e886cec015f7126b2ce607e16d4216e0.json',
-                        thumbUped: false,
-                        smallFaceUrl: '//edu-image.nosdn.127.net/a3bd7746-2b1a-4be3-9b37-dab599dd3f8c.png',
-                        parentId: 382
-                    }, {
-                        projectId: 28007,
-                        projectName: '01-休闲滑板车',
-                        authorId: 1425118674,
-                        authorName: '开心',
-                        thumbUpCount: 0,
-                        viewCount: 3,
-                        thumbnailUrl: '//steam.nosdn.127.net/15d77afec15489027b928c8ca32b13d9.png',
-                        projectUrl: '//steam.nosdn.127.net/a423bfdf3593b05975b73c367ba2440b.json',
-                        thumbUped: false,
-                        smallFaceUrl: '//edu-image.nosdn.127.net/a3bd7746-2b1a-4be3-9b37-dab599dd3f8c.png',
-                        parentId: null
-                    },
-                    {
-                        projectId: 9484,
-                        projectName: '01-休闲滑板车',
-                        authorId: 1416405559,
-                        authorName: '兜兜',
-                        thumbUpCount: 0,
-                        viewCount: 4,
-                        thumbnailUrl: '//steam.nosdn.127.net/9bdf4155f38e6cf17e682a273a50b215.png',
-                        projectUrl: '//steam.nosdn.127.net/2786d44bb2d16135ad0888d765ea7ca2.json',
-                        thumbUped: false,
-                        smallFaceUrl: '//edu-image.nosdn.127.net/6900d9c9-450c-4fd0-b44e-336fd8fa0c79.png',
-                        parentId: 1468
-                    }, {
-                        projectId: 32098,
-                        projectName: '03-电子贺卡',
-                        authorId: 1422855138,
-                        authorName: '诚诚',
-                        thumbUpCount: 1,
-                        viewCount: 5,
-                        thumbnailUrl: '//steam.nosdn.127.net/90adb1b66f0bebce957aaf1e05663082.png',
-                        projectUrl: '//steam.nosdn.127.net/b404a9cb9f35b43e259ff1e267bfbace.json',
-                        thumbUped: false,
-                        smallFaceUrl: '//edu-image.nosdn.127.net/33b4ed3e-99e0-451b-8f73-cb34d7e80568.png',
-                        parentId: 3494
-                    }, {
-                        projectId: 26657,
-                        projectName: '02-欢乐动物园',
-                        authorId: 1422855138,
-                        authorName: '诚诚',
-                        thumbUpCount: 1,
-                        viewCount: 7,
-                        thumbnailUrl: '//steam.nosdn.127.net/51d878205516e441afb0ffab0656295b.png',
-                        projectUrl: '//steam.nosdn.127.net/2f4553f01958e718b12964ee28b1c899.json',
-                        thumbUped: false,
-                        smallFaceUrl: '//edu-image.nosdn.127.net/33b4ed3e-99e0-451b-8f73-cb34d7e80568.png',
-                        parentId: 382
-                    },
-                    {
-                        projectId: 27628,
-                        projectName: '02-欢乐动物园',
-                        authorId: 1424656055,
-                        authorName: '虎哥',
-                        thumbUpCount: 0,
-                        viewCount: 4,
-                        thumbnailUrl: '//steam.nosdn.127.net/0018dcea9b3a9e6e7a4502fd466aa318.png',
-                        projectUrl: '//steam.nosdn.127.net/8af10666ab3bd69ad5e66fc66199c413.json',
-                        thumbUped: false,
-                        smallFaceUrl: '//edu-image.nosdn.127.net/6900d9c9-450c-4fd0-b44e-336fd8fa0c79.png',
-                        parentId: 382
-                    }, {
-                        projectId: 32812,
-                        projectName: '02-欢乐动物园',
-                        authorId: 1421434922,
-                        authorName: '李思妍',
-                        thumbUpCount: 0,
-                        viewCount: 5,
-                        thumbnailUrl: '//steam.nosdn.127.net/0583de9bd775a79db2c418a869e99a9a.png',
-                        projectUrl: '//steam.nosdn.127.net/4b8b203f6dce049ec251c2e5290e51a2.json',
-                        thumbUped: false,
-                        smallFaceUrl: '//edu-image.nosdn.127.net/33b4ed3e-99e0-451b-8f73-cb34d7e80568.png',
-                        parentId: 382
-                    }, {
-                        projectId: 30874,
-                        projectName: '01-休闲滑板车',
-                        authorId: 1421434922,
-                        authorName: '李思妍',
-                        thumbUpCount: 0,
-                        viewCount: 2,
-                        thumbnailUrl: '//steam.nosdn.127.net/5ef03e6d8d42342d87548b203b17c17a.png',
-                        projectUrl: '//steam.nosdn.127.net/2b06cb786d33c836ad0e9100f2811cbf.json',
-                        thumbUped: false,
-                        smallFaceUrl: '//edu-image.nosdn.127.net/33b4ed3e-99e0-451b-8f73-cb34d7e80568.png',
-                        parentId: 1468
-                    }
-                ]
+                projectList: [],
+                totalCount: 100,
+                currentPage: 1,
+                pageSize: 20
             }
         },
         // 生命周期
@@ -412,16 +231,62 @@
         },
         methods: {
             ...mapMutations(['addManageStudentCount']),
-            initDate() {
-                console.log('init', this)
+            async initDate() {
+                let data = await cache.getAllFastProject({});
+                this.totalCount = data.query.totleCount;
+                this.projectList = this.formatListTime(data.list) || [];
+                this.loading = false;
+                console.log('init', data)
             },
-            selectProject: function() {
-                console.log('select', this.searchId)
+            formatListTime(data) {
+                return data && data.map(project => {
+                    project.gmtModified = TimeFormat.formatDate(project.gmtModified)
+                    project.gmtCreate = TimeFormat.formatDate(project.gmtCreate)
+                    return project;
+                })
             },
-            handleChangePage: (page) => {
+            // 搜索
+            async searchUserProjectList(pageIndex, pageSize) {
+                let key = this.searchKey;
+                let type = this.selectType;
+                if (!key) {
+                    await this.initDate();
+                    return true;
+                }
+                let data = [];
+                if (pageIndex && pageSize) {
+                    data = await cache.getFastProjectListByMemberInfo({key, type})
+                } else {
+                    data = await cache.getFastProjectListByMemberInfo({key, type, pageIndex, pageSize})
+                }
+                console.log('search data:', data)
+                console.log('type', type)
+
+                // 进行解析
+                switch (type) {
+                    case '1':
+                        break;
+                    case '2':
+                        console.log('data.query.totalCount', data)
+                        this.totalCount = data.query.totlePageCount;
+                        data = data.list;
+                        break;
+                    default:
+                        console.log('data.query.totalCount', data)
+                        this.totalCount = data.query.totlePageCount;
+                        data = data.list;
+                }
+                this.projectList = this.formatListTime(data) || [];
+                console.log('search data:', data)
+            },
+            handleChangePage(page) {
                 console.log('page', page)
+                this.currentPage = page;
+                this.searchUserProjectList(this.page, this.pageSize)
             },
-            handlePageSizeChange: (pageSize) => {
+            handlePageSizeChange(pageSize) {
+                this.pageSize = pageSize;
+                this.searchUserProjectList(this.page, this.pageSize)
                 console.log('pageSize', pageSize)
             },
             // 跳转创作页面

@@ -1,5 +1,5 @@
 const TimeUtil = {
-    format: function (time) {
+    formatDate: function (time) {
         let date = new Date(time);
         let year = date.getFullYear();
         /* 在日期格式中，月份是从0开始的，因此要加0
@@ -12,6 +12,17 @@ const TimeUtil = {
         let seconds = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
         // 拼接
         return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+    },
+    formatDay: function (time) {
+        let date = new Date(time);
+        let year = date.getFullYear();
+        /* 在日期格式中，月份是从0开始的，因此要加0
+         * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+         * */
+        let month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1;
+        let day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+        // 拼接
+        return year + '-' + month + '-' + day;
     }
 
 }

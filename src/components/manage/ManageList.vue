@@ -2,6 +2,7 @@
     <div class="user-manage">
         <div class="user-manage-edit">
             开启编辑 <i-switch v-model="isEdit" class="user-manage-edit-switch" />
+            一键清空 <i-switch @on-change="deleteAll" class="user-manage-edit-switch" />
         </div>
         <div class="user-manage-list">
             <Card class="user-manage-list-card"  v-for="(item,index) in memberList" :key="'mange-user'+index">
@@ -34,8 +35,8 @@
         // 生命周期
         mounted() {
             // 从本地拿出选择的学生
-            let studentListStr = window.localStorage.getItem('manageStudentList') || [];
-            this.memberList = JSON.parse(studentListStr);
+            let studentListStr = window.localStorage.getItem('manageStudentList');
+            this.memberList = JSON.parse(studentListStr) || [];
         },
         updated() {
             console.log('updated....')
@@ -68,6 +69,16 @@
                 this.addManageStudentCount({
                     studentCount: this.manage.studentCount - 1
                 })
+            },
+            deleteAll(state) {
+                if (state === true) {
+                    console.log('deleteAll');
+                    localStorage.removeItem('manageStudentList');
+                    this.memberList = [];
+                    this.addManageStudentCount({
+                        studentCount: 0
+                    })
+                }
             }
 
         }

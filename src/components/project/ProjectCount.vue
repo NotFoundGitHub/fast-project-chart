@@ -1,16 +1,13 @@
 <template>
   <div class="project-count">
 	<p class="project-count-title">{{title}}</p>
-	<Button type="primary" @click="getFastProjectInfo">show</Button>
 	<DatePicker v-model="startTime" type="date" show-week-numbers placeholder="起始时间" style="width: 200px"></DatePicker>
 	<DatePicker v-model="endTime" type="date" show-week-numbers placeholder="结束时间" style="width: 200px"></DatePicker>
 	<Button type="primary" @click="getProjectUserRate">获取排名</Button>
-
     <Card :bordered="false" class="project-count-card">
 		<p slot="title" v-if="!!startTime">起始时间：{{startTime | timeFormat}}</p>
 		<ve-bar :data="chartData" :settings="chartSettings"></ve-bar>
     </Card>
-	<img :src="backUrl" alt="back" v-if="!!backUrl">
 
   </div>
 </template>
@@ -24,7 +21,6 @@
         data () {
             return {
                 title: '作品数量排行',
-                backUrl: '',
                 startTime: null,
                 endTime: null,
                 chartSettings: {
@@ -37,36 +33,24 @@
                 chartData: {
                     columns: ['用户名', '数量'],
                     rows: [
-                        { '用户名': '1/1', '数量': 1093 },
-                        { '用户名': '1/2', '数量': 3230 },
-                        { '用户名': '1/3', '数量': 2623 },
-                        { '用户名': '1/4', '数量': 1423 },
-                        { '用户名': '1/5', '数量': 3492 },
-                        { '用户名': '1/6', '数量': 4293 }
+                        { '用户名': 'aaa', '数量': 1093 },
+                        { '用户名': 'bbb', '数量': 100 }
                     ]
                 }
             };
         },
         filters: {
             timeFormat (time) {
-                return time && TimeFormat.format(time);
+                return time && TimeFormat.formatDate(time);
             }
         },
         methods: {
-            async getFastProjectInfo () {
-                let data = await cache.getProjectInfo({projectId: 6})
-                this.msg = data;
-                this.backUrl = data.smallFaceUrl;
-                console.log(data)
-            },
+
             async getProjectUserRate () {
                 let startTime = this.startTime && new Date(this.startTime).valueOf()
                 let endTime = this.endTime && new Date(this.endTime).valueOf()
-                console.log('startTime', startTime);
                 let data = await cache.getProjectUserRate({startTime, endTime})
-
                 this.chartData.rows = this.convertTable(data);
-                console.log(data)
             },
             // 转换成图表
             convertTable (data) {
@@ -79,7 +63,6 @@
             subStrName(name) {
                 const MAX_NAME_LENGTH = 6;
                 if (name && /[^u4e00-u9fa5]/img.test(name)) {
-                    console.log()
                     name = name.substr(0, Math.floor(MAX_NAME_LENGTH / 2));
                 }
                 if (name && name.length <= MAX_NAME_LENGTH) {

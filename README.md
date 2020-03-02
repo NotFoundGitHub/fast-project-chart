@@ -5,8 +5,9 @@
 ## Build Setup
 
 ``` bash
+npm install cnpm -g
 # install dependencies
-npm install
+cnpm install
 
 # serve with hot reload at localhost:8080
 npm run dev
