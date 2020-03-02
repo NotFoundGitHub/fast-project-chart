@@ -38,9 +38,6 @@
             let studentListStr = window.localStorage.getItem('manageStudentList');
             this.memberList = JSON.parse(studentListStr) || [];
         },
-        updated() {
-            console.log('updated....')
-        },
         methods: {
             ...mapMutations(['addManageStudentCount']),
 
@@ -50,7 +47,6 @@
             },
             // 删除用户
             delMemberByIndex(index) {
-                console.log('index', index)
                 // 1.先从localStorage中取出数据
                 let manageStudentList = window.localStorage.getItem('manageStudentList');
                 if (manageStudentList) {

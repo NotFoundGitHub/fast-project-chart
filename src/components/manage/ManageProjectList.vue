@@ -239,15 +239,11 @@
                 console.log('init', data)
             },
             async initMemberInfo(memberId) {
-                console.log('this.$route.memberId', memberId);
                 let data = await cache.getUserInfo({memberId: memberId});
                 this.userInfo = data;
-                console.log('member', data);
             },
             // 选择某一行
             handleSelect(selection) {
-                console.log('selection', selection)
-
                 let memberId = this.$route.params.memberId;
                 let currentCommentList = selection.map(i => {
                     return i.projectId;

@@ -89,7 +89,8 @@
                                     props: {
                                         size: 'small',
                                         shape: 'circle',
-                                        'icon': 'md-add'
+                                        'icon': 'md-add',
+                                        disabled: params.row.hasAdd
                                     },
                                     style: {
                                         marginLeft: '20px'
@@ -242,6 +243,12 @@
                 return data && data.map(project => {
                     project.gmtModified = TimeFormat.formatDate(project.gmtModified)
                     project.gmtCreate = TimeFormat.formatDate(project.gmtCreate)
+                    // 是否可以添加
+                    let manageStudentList = JSON.parse(window.localStorage.getItem('manageStudentList')) || [];
+                    let memberList = manageStudentList.map(i => i.authorId) || [];
+                    if (memberList.includes(project.authorId)) {
+                        project.hasAdd = true
+                    }
                     return project;
                 })
             },
