@@ -161,8 +161,26 @@
                         key: 'parentId',
                         tooltip: true,
                         width: 120,
-                        resizable: true
-
+                        resizable: true,
+                        render: (h, params) => {
+                            return h('div', [
+                                params.row.parentId && h('Button', {
+                                    props: {
+                                        type: 'primary',
+                                        size: 'small',
+                                        shape: 'circle'
+                                    },
+                                    style: {
+                                        marginLeft: '20px'
+                                    },
+                                    on: {
+                                        click: () => {
+                                            this.handleParentProjectInfoShowModal(params.row.parentId);
+                                        }
+                                    }
+                                }, params.row.parentId)
+                            ]);
+                        }
                     },
                     {
                         title: 'Action',
@@ -200,7 +218,8 @@
                     }
                 ],
                 projectList: [],
-                totalCount: 0
+                totalCount: 0,
+                parentInfo: {}
             }
         },
         // 生命周期
@@ -292,6 +311,21 @@
                 console.log('projectId', projectId)
                 this.restoreProjectId = projectId;
                 this.restoreModal = true;
+            },
+            async handleParentProjectInfoShowModal(projectId) {
+                this.parentInfo = await cache.getProjectInfo({projectId})
+                this.$Modal.confirm({
+                    title: this.parentInfo.projectName,
+                    cancelText: '去创作页',
+                    content: `<p>作者：${this.parentInfo.authorName}</p>
+                    <p>作者ID：${this.parentInfo.authorId}</p>
+                    <p>作品ID：${this.parentInfo.projectId}</p>
+                    `,
+                    onCancel: () => {
+                        window.open(`https://geek.163.com/path/project/fast/create#${projectId}`, '_blank')
+                    }
+                });
+                this.parentInfo = {};
             }
         }
     }

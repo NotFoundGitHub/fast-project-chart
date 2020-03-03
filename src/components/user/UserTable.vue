@@ -50,7 +50,7 @@
 
     export default {
         computed: {
-            ...mapState(['manage'])
+            ...mapState(['manage', 'searchStudent'])
         },
         data() {
             return {
@@ -190,7 +190,26 @@
                         key: 'parentId',
                         tooltip: true,
                         width: 120,
-                        resizable: true
+                        resizable: true,
+                        render: (h, params) => {
+                            return h('div', [
+                                params.row.parentId && h('Button', {
+                                    props: {
+                                        type: 'primary',
+                                        size: 'small',
+                                        shape: 'circle'
+                                    },
+                                    style: {
+                                        marginLeft: '20px'
+                                    },
+                                    on: {
+                                        click: () => {
+                                            this.handleParentProjectInfoShowModal(params.row.parentId);
+                                        }
+                                    }
+                                }, params.row.parentId)
+                            ]);
+                        }
 
                     },
                     {
@@ -231,13 +250,15 @@
             console.log('updated....')
         },
         methods: {
-            ...mapMutations(['addManageStudentCount']),
+            ...mapMutations(['addManageStudentCount', 'saveSearchStudentInfo']),
             async initDate() {
                 let data = await cache.getAllFastProject({});
                 this.totalCount = data.query.totleCount;
                 this.projectList = this.formatListTime(data.list) || [];
                 this.loading = false;
-                console.log('init', data)
+                // vuex 中获取搜索信息
+                this.selectType = this.searchStudent.type;
+                this.searchKey = this.searchStudent.key;
             },
             formatListTime(data) {
                 return data && data.map(project => {
@@ -260,14 +281,19 @@
                     await this.initDate();
                     return true;
                 }
+                // 保存到vuex中
+                this.saveSearchStudentInfo({
+                    searchStudent: {
+                        type,
+                        key
+                    }
+                })
                 let data = [];
                 if (pageIndex && pageSize) {
                     data = await cache.getFastProjectListByMemberInfo({key, type})
                 } else {
                     data = await cache.getFastProjectListByMemberInfo({key, type, pageIndex, pageSize})
                 }
-                console.log('search data:', data)
-                console.log('type', type)
 
                 // 进行解析
                 switch (type) {
@@ -349,6 +375,21 @@
                 this.addManageStudentCount({
                     studentCount: this.manage.studentCount + 1
                 })
+            },
+            async handleParentProjectInfoShowModal(projectId) {
+                this.parentInfo = await cache.getProjectInfo({projectId})
+                this.$Modal.confirm({
+                    title: this.parentInfo.projectName,
+                    cancelText: '去创作页',
+                    content: `<p>作者：${this.parentInfo.authorName}</p>
+                    <p>作者ID：${this.parentInfo.authorId}</p>
+                    <p>作品ID：${this.parentInfo.projectId}</p>
+                    `,
+                    onCancel: () => {
+                        window.open(`https://geek.163.com/path/project/fast/create#${projectId}`, '_blank')
+                    }
+                });
+                this.parentInfo = {};
             }
 
         }

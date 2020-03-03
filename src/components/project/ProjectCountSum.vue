@@ -50,9 +50,10 @@
             },
             convertDataToChart(data, days) {
                 let dateArr = TimeFormat.getLastDays(days || 7).reverse();
+                this.title = `最近 ${days || 7} 日内作品数量排行`
                 data = this.convertCountDateArrToObject(data);
                 this.chartData.rows = dateArr.map(date => {
-                    let obj = data[date]
+                    let obj = data[date] || {};
                     obj['日期'] = (obj && obj.time) || date;
                     obj['数量'] = (obj && obj.count) || 0;
                     this.sumProject = this.sumProject + obj['数量'];

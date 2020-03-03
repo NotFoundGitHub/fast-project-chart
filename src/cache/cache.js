@@ -1,6 +1,9 @@
 import axios from './axios.util';
 
 const fastCache = {
+    /**
+     * @param projectId
+     */
     getProjectInfo: params => axios.get('/api/v1/live/fast/ide/project/get.json', {params}),
     /**
      * fast编辑器获取作品信息
