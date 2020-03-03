@@ -1,10 +1,17 @@
 <template>
     <div>
         <Menu mode="horizontal" theme="primary" active-name="1">
-            <MenuItem name="1" to="/project">
-                <Icon type="ios-paper" />
-                作品排行
-            </MenuItem>
+            <Submenu name="1">
+                <template slot="title">
+                    <Icon type="ios-stats" />
+                    统计分析
+                </template>
+                <MenuGroup title="趣玩作品统计">
+                    <MenuItem name="1-1" to="/project/count/rate">作品数排行</MenuItem>
+                    <MenuItem name="1-2" to="/project/count/sum">最近作品数</MenuItem>
+                    <MenuItem name="1-3" to="/project/count/remix">最近改编数</MenuItem>
+                </MenuGroup>
+            </Submenu>
             <MenuItem name="2" to="/user">
                 <Icon type="ios-people" />
                 用户管理

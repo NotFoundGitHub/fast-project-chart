@@ -3,7 +3,10 @@ import Router from 'vue-router'
 import Home from '@/components/Home'
 
 import Project from '@/components/project/Project'
-import ProjectCount from '@/components/project/ProjectCount'
+import ProjectCountRate from '@/components/project/ProjectCountRate'
+import ProjectCountSum from '@/components/project/ProjectCountSum'
+import ProjectCountRemix from '@/components/project/ProjectCountRemix'
+
 import ProjectDetail from '@/components/project/ProjectDetail'
 
 import User from '@/components/user/User'
@@ -28,12 +31,19 @@ export default new Router({
             path: '/project',
             name: 'project',
             component: Project,
-            redirect: { name: 'project.count' },
+            redirect: { name: 'project.count.rate' },
             children: [{
-                           path: 'count',
-                           name: 'project.count',
-                           component: ProjectCount
-
+                           path: 'count/rate',
+                           name: 'project.count.rate',
+                           component: ProjectCountRate
+                       }, {
+                           path: 'count/sum',
+                           name: 'project.count.sum',
+                           component: ProjectCountSum
+                       }, {
+                           path: 'count/remix',
+                           name: 'project.count.remix',
+                           component: ProjectCountRemix
                        },
                        {
                            path: 'detail/:projectId',

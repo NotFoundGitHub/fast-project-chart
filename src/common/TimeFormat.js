@@ -23,6 +23,22 @@ const TimeUtil = {
         let day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
         // 拼接
         return year + '-' + month + '-' + day;
+    },
+    diffDay: function(first, second) {
+        return Math.floor((first - second) / (24 * 60 * 60 * 1000));
+    },
+    getLastDays: function(count) {
+        // 拼接时间
+        let timeArr = [];
+        for (let i = 0; i <= count; i++) {
+            let time2 = new Date()
+            time2.setTime(time2.getTime() - (24 * 60 * 60 * 1000 * i))
+            let Y2 = time2.getFullYear()
+            let M2 = ((time2.getMonth() + 1) > 9 ? (time2.getMonth() + 1) : '0' + (time2.getMonth() + 1))
+            let D2 = (time2.getDate() > 9 ? time2.getDate() : '0' + time2.getDate())
+            timeArr.push(Y2 + '-' + M2 + '-' + D2);
+        }
+        return timeArr;
     }
 
 }

@@ -1,10 +1,10 @@
 <template>
-  <div class="project-count">
-	<p class="project-count-title">{{title}}</p>
+  <div class="project-count-rate">
+	<p class="project-count-rate-title">{{title}}</p>
 	<DatePicker v-model="startTime" type="date" show-week-numbers placeholder="起始时间" style="width: 200px"></DatePicker>
 	<DatePicker v-model="endTime" type="date" show-week-numbers placeholder="结束时间" style="width: 200px"></DatePicker>
 	<Button type="primary" @click="getProjectUserRate">获取排名</Button>
-    <Card :bordered="false" class="project-count-card">
+    <Card :bordered="false" class="project-count-rate-card">
 		<p slot="title" v-if="!!startTime">起始时间：{{startTime | timeFormat}}</p>
 		<ve-bar :data="chartData" :settings="chartSettings"></ve-bar>
     </Card>
@@ -17,10 +17,10 @@
     import TimeFormat from '@/common/TimeFormat';
 
     export default {
-        name: 'project-count',
+        name: 'project-count-rate',
         data () {
             return {
-                title: '作品数量排行',
+                title: '用户作品数量排行',
                 startTime: null,
                 endTime: null,
                 chartSettings: {
@@ -33,8 +33,8 @@
                 chartData: {
                     columns: ['用户名', '数量'],
                     rows: [
-                        { '用户名': 'aaa', '数量': 1093 },
-                        { '用户名': 'bbb', '数量': 100 }
+                        { '用户名': 'aaa', '数量': 1093, 'memberId': 123 },
+                        { '用户名': 'bbb', '数量': 100, 'memberId': 456 }
                     ]
                 }
             };
@@ -91,7 +91,7 @@ li {
 a {
   color: #42b983;
 }
-.project-count{
+.project-count-rate{
 	&-title{
 		margin-bottom: 20px;
 		font-size: 16px;
