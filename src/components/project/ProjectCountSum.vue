@@ -1,6 +1,6 @@
 <template>
   <div class="project-count-sum">
-	<p class="project-count-sum-title">{{title}}</p>
+	<p class="project-count-sum-title">{{title}}，共计{{sumProject}}个</p>
 	<DatePicker v-model="startTime" type="date" show-week-numbers placeholder="起始时间" style="width: 200px"></DatePicker>
 	<Button type="primary" @click="getProjectDays">查询</Button>
     <Card :bordered="false" class="project-count-sum-card">
@@ -24,6 +24,7 @@
                 chartSettings: {
                     metrics: ['数量']
                 },
+                sumProject: 0,
                 chartData: {
                     columns: ['日期', '数量'],
                     rows: [
@@ -43,6 +44,7 @@
         },
         methods: {
             async initData() {
+                this.sumProject = 0;
                 let data = await cache.getEveryDayProjectCount({});
                 this.convertDataToChart(data, null);
             },
@@ -53,6 +55,7 @@
                     let obj = data[date]
                     obj['日期'] = (obj && obj.time) || date;
                     obj['数量'] = (obj && obj.count) || 0;
+                    this.sumProject = this.sumProject + obj['数量'];
                     return obj;
                 });
             },
@@ -70,13 +73,14 @@
                     this.initData();
                 } else {
                     let duration = TimeFormat.diffDay(new Date(), startTime);
-                    if (duration < 0) {
+                    if (duration <= 0) {
                         this.$Message['error']({
                             background: true,
                             content: '未来可期~'
                         });
                         return false;
                     }
+                    this.sumProject = 0;
                     let data = await cache.getEveryDayProjectCount({days: duration});
                     this.convertDataToChart(data, duration);
                     this.title = `最近 ${duration + 1} 日内作品数量排行`
