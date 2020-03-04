@@ -9,6 +9,7 @@
                 clearable
                 placeholder="输入作品id或者用户id"
                 @on-enter="searchUserProjectList(null,null)"
+                @on-clear="clearSearchRecord"
                 class="user-project-table-search-input"
                 style="width: 300px"/>
              <Button @click="searchUserProjectList(null,null)" class="user-project-table-search-btn" type="primary" shape="circle" icon="ios-search">搜索</Button>
@@ -312,15 +313,38 @@
                 this.projectList = this.formatListTime(data) || [];
                 console.log('search data:', data)
             },
-            handleChangePage(page) {
+            clearSearchRecord() {
+                this.saveSearchStudentInfo({searchStudent: {
+                    type: '1',
+                    key: null
+                }})
+            },
+            // 切换分页时
+            async handleChangePage(page) {
                 console.log('page', page)
                 this.currentPage = page;
-                this.searchUserProjectList(this.page, this.pageSize)
+                // 1.判断是否搜索
+                if (this.searchKey) {
+                    this.searchUserProjectList(this.currentPage, this.pageSize)
+                } else {
+                    // 普通分页
+                    let data = await cache.getAllFastProject({pageIndex: page, pageSize: this.pageSize});
+                    this.totalCount = data.query.totleCount;
+                    this.projectList = this.formatListTime(data.list) || [];
+                }
             },
-            handlePageSizeChange(pageSize) {
+            // 切换分页大小
+            async handlePageSizeChange(pageSize) {
                 this.pageSize = pageSize;
-                this.searchUserProjectList(this.page, this.pageSize)
-                console.log('pageSize', pageSize)
+                // 1.判断是否搜索
+                if (this.searchKey) {
+                    this.searchUserProjectList(this.currentPage, this.pageSize)
+                } else {
+                    // 普通分页
+                    let data = await cache.getAllFastProject({pageIndex: this.currentPage, pageSize: this.pageSize});
+                    this.totalCount = data.query.totleCount;
+                    this.projectList = this.formatListTime(data.list) || [];
+                }
             },
             // 跳转创作页面
             jumpCreateLink: (id, type) => {
